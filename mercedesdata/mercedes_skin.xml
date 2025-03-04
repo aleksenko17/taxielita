@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<krpano version="1.19-pr16">
+
+<!-- ********** -->
+<!-- Sans Control Bar -->
+<!-- id : SansControlBar -->
+<!-- ********** -->
+
+  <krpano SansControlBarbarbuilt="false" SansControlBarbackgroundwidthwhenclosed="0" SansControlBarbackgroundwidthwhenopened="0" SansControlBarIsOpened="false" />
+  <events name="SansControlBarevents" 
+    onxmlcomplete="SansControlBarbuildMenuBar();" 
+
+
+    keep="true" />
+
+
+
+  <action name="SansControlBarbuildMenuBar">
+    ifnot (SansControlBarbarbuilt, SansControlBarbuildMenu(); set(SansControlBarbarbuilt, true););
+  </action>
+
+  <style name="SansControlBar_btn_style"
+         keep="true"
+         edge="bottom"
+         align="bottom"
+         x="0" y="0"
+         width="40" height="40"
+         crop="0|0|60|60"
+         onovercrop="0|60|60|60"
+         ondowncrop="0|120|60|60"
+         onhover="showTooltip('plugin', SansControlBarmenuTooltipStyle, right);"
+         onout="hideTooltip();"
+         />
+  <style name="SansControlBar_btn_style_off"
+         keep="true"
+         edge="bottom"
+         align="bottom"
+         x="0" y="0"
+         width="40" height="40"
+         onhover="showTooltip('plugin', SansControlBarmenuTooltipStyle, right);"
+         onout="hideTooltip();"
+         />
+
+  <layer name="SansControlBar_menu_bg"
+         keep="true"
+         type="container"
+         zorder="1"
+         width="40"
+         height="40"
+         align="bottomright"
+         x="0" y="10"
+         maskchildren="true"
+         rotate="0"
+         visible="false"
+         >
+
+
+
+
+
+
+    <layer name="SansControlBarbtn_openfs"
+            url="%FIRSTXML%/graphics/sans controlbar/btn_enter_fs.png"
+            onclick="enterFullscreen();
+"
+            style="SansControlBar_btn_style"
+            visible="false"
+            devices="fullscreensupport"
+            tooltip="SansControlBaropenFsTip"
+            />
+    <layer name="SansControlBarbtn_closefs"
+            url="%FIRSTXML%/graphics/sans controlbar/btn_close_fs.png"
+            onclick="exitFullscreen();
+"
+            style="SansControlBar_btn_style"
+            visible="false"
+            devices="fullscreensupport"
+            tooltip="SansControlBarcloseFsTip"
+            />
+
+
+
+
+
+ </layer>
+
+
+
+
+
+
+  <action name="SansControlBarhideMenuControls">
+    set(SansControlBarIsOpened, false);
+
+
+	SansControlBarupdateFullscreenButtons();
+
+
+
+
+
+
+
+
+	set(layer[SansControlBar_menu_bg].height, get(SansControlBarbackgroundwidthwhenclosed));
+
+	set(layer[SansControlBar_menu_bg].visible, true);
+  </action>
+  <action name="SansControlBarshowMenuControls">
+    set(SansControlBarIsOpened, true);
+	set(layer[SansControlBar_menu_bg].visible, true);
+
+
+	SansControlBarupdateFullscreenButtons();
+
+
+
+
+
+
+
+    set(layer[SansControlBar_menu_bg].height, get(SansControlBarbackgroundwidthwhenopened));
+  </action>
+
+
+
+
+  <events name="SansControlBarmenufullscreenchangeevent"
+          onenterfullscreen="SansControlBarupdateFullscreenButtons();"
+          onexitfullscreen="SansControlBarupdateFullscreenButtons();"
+          keep="true"/>
+	<action name="SansControlBarHideFullscreenButtons">
+		set(layer[SansControlBarbtn_openfs].visible , false);
+		set(layer[SansControlBarbtn_closefs].visible, false);
+	</action>
+	<action name="SansControlBarShowFullscreenButtons">
+		if (device.fullscreensupport,
+			if(tour_fullscreen,
+				set(layer[SansControlBarbtn_openfs].visible , false);
+				set(layer[SansControlBarbtn_closefs].visible, true);
+			,
+				set(layer[SansControlBarbtn_openfs].visible ,true);
+				set(layer[SansControlBarbtn_closefs].visible,false);
+			);
+		,
+			SansControlBarHideFullscreenButtons();
+		);
+	</action>
+	<action name="SansControlBarupdateFullscreenButtons">
+		if (SansControlBarIsOpened,
+			SansControlBarShowFullscreenButtons();
+		,
+			SansControlBarHideFullscreenButtons();
+		);
+	</action>
+
+
+
+<layer name="SansControlBarmenuTooltipStyle"
+	keep="true"
+	enabled="false"
+	capture="false"
+	url="%FIRSTXML%/graphics/textfield.swf"
+	align="center"
+	background="false"
+	border="false"
+	css="color:#000000;font-family:Helvetica;font-weight:bold;font-size:14px;text-align:left;"
+	height="20"
+	autoheight="true"
+	autowidth="auto"
+	xoffset="0"
+	yoffset="0"
+	padding="2"
+	selectable="false"
+	zorder="0"
+	visible="false"
+	html=""
+	edge="right"
+/>
+  <action name="SansControlBarbuildMenu">
+    
+    set(SansControlBarbutton_pos, 0);
+
+
+
+      if (device.fullscreensupport,
+        set(layer[SansControlBarbtn_openfs].y , get(SansControlBarbutton_pos));
+        set(layer[SansControlBarbtn_closefs].y, get(SansControlBarbutton_pos));
+        inc(SansControlBarbutton_pos, 45);
+      );
+
+
+
+
+
+
+
+
+
+
+
+      dec(SansControlBarbutton_pos, 5);
+
+      set(SansControlBarbackgroundwidthwhenopened, get(SansControlBarbutton_pos));
+
+
+    
+      set(layer[SansControlBar_menu_bg].height, get(SansControlBarbackgroundwidthwhenopened));
+	
+	
+	
+    </action>
+
+	<events name="SansControlBarStartTourEvents" onTourStart="SansControlBarCallOnStartTour();" keep="true" />
+	
+	<action name="SansControlBarCallOnStartTour">
+		
+		SansControlBarshowMenuControls();
+	</action>
+
+
+
+  <!-- Fullscreen Management -->
+  <action name="exitFullScreen" devices="fullscreensupport">set(tour_fullscreen,false);set(fullscreen,false);</action>
+  <action name="enterFullScreen" devices="fullscreensupport">set(tour_fullscreen,true);set(fullscreen,true);</action>
+  <action name="switchFullScreen">if(tour_fullscreen,exitFullScreen();,enterFullScreen(););</action>
+
+  
+  <events name="krpanoExitFullscreenEvent"
+    onexitfullscreen="if(tour_fullscreen,exitFullScreenChangeEvent(););"
+    keep="true" />
+
+  <action name="exitFullScreenChangeEvent" devices="fullscreensupport">set(tour_fullscreen,false);events.dispatch(onexitfullscreen);</action>
+
+</krpano>
